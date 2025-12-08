@@ -1,0 +1,21 @@
+services:
+  - type: web
+    name: mev-exorcist-backend
+    env: node
+    region: oregon
+    plan: starter
+    buildCommand: npm install && npm run build
+    startCommand: npm start
+    healthCheckPath: /health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 3001
+      - key: ALCHEMY_WSS_URL
+        sync: false
+      - key: UNISWAP_V3_ROUTER
+        value: "0xE592427A0AEce92De3Edee1F18E0157C05861564"
+      - key: RISK_THRESHOLD_ETH
+        value: "0.1"
+    autoDeploy: true

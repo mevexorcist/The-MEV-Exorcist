@@ -1,0 +1,72 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: #000000;
+  --foreground: #00FF00;
+}
+
+body {
+  color: var(--foreground);
+  background: var(--background);
+  font-family: var(--font-geist-mono), 'Courier New', monospace;
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+}
+
+/* Glitch animation for title */
+@keyframes glitch {
+  0%, 100% {
+    transform: translate(0);
+    text-shadow: 2px 2px #FF0000, -2px -2px #00FF00;
+  }
+  25% {
+    transform: translate(-2px, 2px);
+    text-shadow: -2px -2px #FF0000, 2px 2px #00FF00;
+  }
+  50% {
+    transform: translate(2px, -2px);
+    text-shadow: 2px -2px #FF0000, -2px 2px #00FF00;
+  }
+  75% {
+    transform: translate(-2px, -2px);
+    text-shadow: -2px 2px #FF0000, 2px -2px #00FF00;
+  }
+}
+
+.glitch-text {
+  animation: glitch 1s infinite;
+  will-change: transform;
+}
+
+/* Pulsing border animation for HIGH risk transactions */
+@keyframes pulse-border {
+  0%, 100% {
+    border-color: #FF0000;
+    box-shadow: 0 0 5px #FF0000, 0 0 10px #FF0000;
+  }
+  50% {
+    border-color: #FF6666;
+    box-shadow: 0 0 10px #FF0000, 0 0 20px #FF0000, 0 0 30px #FF0000;
+  }
+}
+
+.pulse-border {
+  animation: pulse-border 2s ease-in-out infinite;
+  will-change: border-color, box-shadow;
+}
+
+/* GPU-accelerated transforms */
+.gpu-accelerated {
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  perspective: 1000px;
+}

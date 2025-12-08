@@ -1,0 +1,36 @@
+{
+  "name": "backend",
+  "version": "1.0.0",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "dev": "nodemon --watch src --ext ts --exec ts-node src/index.ts",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "devDependencies": {
+    "@types/jest": "^30.0.0",
+    "@types/node": "^24.10.1",
+    "@types/socket.io-client": "^1.4.36",
+    "@types/ws": "^8.18.1",
+    "fast-check": "^4.3.0",
+    "jest": "^30.2.0",
+    "nodemon": "^3.1.11",
+    "socket.io-client": "^4.8.1",
+    "ts-jest": "^29.4.6",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.9.3"
+  },
+  "dependencies": {
+    "dotenv": "^17.2.3",
+    "ethers": "^6.16.0",
+    "socket.io": "^4.8.1",
+    "ws": "^8.18.3"
+  }
+}
