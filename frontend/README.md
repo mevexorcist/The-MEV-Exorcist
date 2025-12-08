@@ -29,8 +29,89 @@ To learn more about Next.js, take a look at the following resources:
 
 You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
 
+## Testing
+
+### Unit and Property Tests
+
+Run the test suite:
+
+```bash
+npm test
+```
+
+Run tests in watch mode:
+
+```bash
+npm run test:watch
+```
+
+Generate coverage report:
+
+```bash
+npm run test:coverage
+```
+
+### Integration Testing
+
+Run the integration testing guide:
+
+```bash
+npm run test:integration
+```
+
+This provides a comprehensive checklist for manual integration testing including:
+- Visual effects verification
+- Audio testing across browsers
+- Error handling scenarios
+- Responsive design testing
+- Performance testing
+
+### Performance Monitoring
+
+Open `performance-monitor.html` in your browser to monitor real-time performance metrics:
+- FPS (Frames Per Second)
+- Memory usage
+- DOM node count
+- Page load time
+- First Contentful Paint
+- Time to Interactive
+
+### Testing Documentation
+
+- **[TESTING-CHECKLIST.md](./TESTING-CHECKLIST.md)** - Comprehensive testing checklist (200+ items)
+- **[POLISH-IMPROVEMENTS.md](./POLISH-IMPROVEMENTS.md)** - Polish improvements and testing infrastructure
+- **[test-integration.js](./test-integration.js)** - Interactive testing guide script
+- **[performance-monitor.html](./performance-monitor.html)** - Real-time performance monitoring tool
+
 ## Deploy on Vercel
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+The MEV Exorcist frontend is configured for deployment on Vercel.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+### Quick Deploy
+
+1. Push your code to GitHub
+2. Import repository in Vercel Dashboard
+3. Configure environment variables (see `.env.production.example`)
+4. Deploy
+
+### Detailed Instructions
+
+See [DEPLOYMENT.md](./DEPLOYMENT.md) for comprehensive deployment instructions including:
+- Environment variable configuration
+- Build settings
+- Security headers and CSP
+- Browser and device testing
+- Troubleshooting guide
+
+### Deployment Checklist
+
+Use [DEPLOYMENT-CHECKLIST.md](./DEPLOYMENT-CHECKLIST.md) for a quick reference checklist to ensure all deployment steps are completed.
+
+### Required Environment Variables
+
+```bash
+NEXT_PUBLIC_BACKEND_URL=https://your-backend-url.railway.app
+NEXT_PUBLIC_ETHERSCAN_BASE=https://sepolia.etherscan.io
+```
+
+See `.env.production.example` for production configuration template.

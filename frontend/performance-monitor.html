@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MEV Exorcist - Performance Monitor</title>
+  <style>
+    body {
+      font-family: 'Courier New', monospace;
+      background: #000;
+      color: #00FF00;
+      padding: 20px;
+      margin: 0;
+    }
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    h1 {
+      text-align: center;
+      color: #FF0000;
+      text-shadow: 0 0 10px #FF0000;
+    }
+    .metric-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 20px;
+      margin: 20px 0;
+    }
+    .metric-card {
+      border: 2px solid #00FF00;
+      padding: 15px;
+      background: rgba(0, 255, 0, 0.05);
+    }
+    .metric-card.warning {
+      border-color: #FFA500;
+      background: rgba(255, 165, 0, 0.05);
+    }
+    .metric-card.error {
+      border-color: #FF0000;
+      background: rgba(255, 0, 0, 0.05);
+    }
+    .metric-title {
+      font-size: 14px;
+      opacity: 0.7;
+      margin-bottom: 5px;
+    }
+    .metric-value {
+      font-size: 32px;
+      font-weight: bold;
+    }
+    .metric-target {
+      font-size: 12px;
+      opacity: 0.5;
+      margin-top: 5px;
+    }
+    .status {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 3px;
+      font-size: 12px;
+      margin-top: 5px;
+    }
+    .status.good {
+      background: #00FF00;
+      color: #000;
+    }
+    .status.warning {
+      background: #FFA500;
+      color: #000;
+    }
+    .status.bad {
+      background: #FF0000;
+      color: #FFF;
+    }
+    .instructions {
+      border: 2px solid #00FF00;
+      padding: 20px;
+      margin: 20px 0;
+    }
+    .instructions h2 {
+      margin-top: 0;
+    }
+    .instructions ol {
+      margin: 10px 0;
+      padding-left: 20px;
+    }
+    .instructions li {
+      margin: 5px 0;
+    }
+    button {
+      background: #00FF00;
+      color: #000;
+      border: none;
+      padding: 10px 20px;
+      font-family: 'Courier New', monospace;
+      font-size: 14px;
+      cursor: pointer;
+      margin: 5px;
+    }
+    button:hover {
+      background: #00CC00;
+    }
+    button:disabled {
+      background: #666;
+      cursor: not-allowed;
+    }
+    .log {
+      border: 2px solid #00FF00;
+      padding: 15px;
+      margin: 20px 0;
+      max-height: 300px;
+      overflow-y: auto;
+      font-size: 12px;
+    }
+    .log-entry {
+      margin: 5px 0;
+      padding: 5px;
+      border-left: 3px solid #00FF00;
+      padding-left: 10px;
+    }
+    .log-entry.warning {
+      border-left-color: #FFA500;
+      color: #FFA500;
+    }
+    .log-entry.error {
+      border-left-color: #FF0000;
+      color: #FF0000;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>⚡ MEV EXORCIST PERFORMANCE MONITOR ⚡</h1>
+
+    <div class="instructions">
+      <h2>📋 How to Use This Monitor</h2>
+      <ol>
+        <li>Open your MEV Exorcist application in another tab: <a href="http://localhost:3000" target="_blank" style="color: #00FF00;">http://localhost:3000</a></li>
+        <li>Click "Start Monitoring" below</li>
+        <li>Interact with the application (wait for transactions, click elements, etc.)</li>
+        <li>Monitor the metrics below in real-time</li>
+        <li>Check if all metrics meet their targets</li>
+      </ol>
+      <p><strong>Note:</strong> This monitor uses the Performance API to measure real-time metrics.</p>
+    </div>
+
+    <div style="text-align: center; margin: 20px 0;">
+      <button id="startBtn" onclick="startMonitoring()">Start Monitoring</button>
+      <button id="stopBtn" onclick="stopMonitoring()" disabled>Stop Monitoring</button>
+      <button onclick="clearLog()">Clear Log</button>
+    </div>
+
+    <div class="metric-grid" id="metrics">
+      <div class="metric-card">
+        <div class="metric-title">FPS (Frames Per Second)</div>
+        <div class="metric-value" id="fps">--</div>
+        <div class="metric-target">Target: 60 FPS</div>
+        <div class="status good" id="fps-status">Measuring...</div>
+      </div>
+
+      <div class="metric-card">
+        <div class="metric-title">Memory Usage (MB)</div>
+        <div class="metric-value" id="memory">--</div>
+        <div class="metric-target">Target: Stable over time</div>
+        <div class="status good" id="memory-status">Measuring...</div>
+      </div>
+
+      <div class="metric-card">
+        <div class="metric-title">DOM Nodes</div>
+        <div class="metric-value" id="domNodes">--</div>
+        <div class="metric-target">Target: < 1500 nodes</div>
+        <div class="status good" id="dom-status">Measuring...</div>
+      </div>
+
+      <div class="metric-card">
+        <div class="metric-title">Page Load Time (ms)</div>
+        <div class="metric-value" id="loadTime">--</div>
+        <div class="metric-target">Target: < 2000ms</div>
+        <div class="status good" id="load-status">Measuring...</div>
+      </div>
+
+      <div class="metric-card">
+        <div class="metric-title">Time to Interactive (ms)</div>
+        <div class="metric-value" id="tti">--</div>
+        <div class="metric-target">Target: < 3000ms</div>
+        <div class="status good" id="tti-status">Measuring...</div>
+      </div>
+
+      <div class="metric-card">
+        <div class="metric-title">First Contentful Paint (ms)</div>
+        <div class="metric-value" id="fcp">--</div>
+        <div class="metric-target">Target: < 1000ms</div>
+        <div class="status good" id="fcp-status">Measuring...</div>
+      </div>
+    </div>
+
+    <div class="log" id="log">
+      <div class="log-entry">Performance monitoring log will appear here...</div>
+    </div>
+  </div>
+
+  <script>
+    let monitoring = false;
+    let frameCount = 0;
+    let lastFrameTime = performance.now();
+    let fps = 0;
+    let initialMemory = 0;
+
+    function log(message, type = 'info') {
+      const logDiv = document.getElementById('log');
+      const entry = document.createElement('div');
+      entry.className = `log-entry ${type}`;
+      const timestamp = new Date().toLocaleTimeString();
+      entry.textContent = `[${timestamp}] ${message}`;
+      logDiv.insertBefore(entry, logDiv.firstChild);
+    }
+
+    function clearLog() {
+      document.getElementById('log').innerHTML = '<div class="log-entry">Log cleared.</div>';
+    }
+
+    function updateStatus(elementId, value, target, comparison = 'less') {
+      const statusEl = document.getElementById(elementId);
+      let status = 'good';
+      let text = 'GOOD';
+
+      if (comparison === 'less') {
+        if (value > target * 1.5) {
+          status = 'bad';
+          text = 'POOR';
+        } else if (value > target) {
+          status = 'warning';
+          text = 'FAIR';
+        }
+      } else if (comparison === 'greater') {
+        if (value < target * 0.7) {
+          status = 'bad';
+          text = 'POOR';
+        } else if (value < target) {
+          status = 'warning';
+          text = 'FAIR';
+        }
+      }
+
+      statusEl.className = `status ${status}`;
+      statusEl.textContent = text;
+      
+      // Update card border
+      const card = statusEl.closest('.metric-card');
+      card.className = `metric-card ${status === 'good' ? '' : status === 'warning' ? 'warning' : 'error'}`;
+    }
+
+    function measureFPS() {
+      frameCount++;
+      const currentTime = performance.now();
+      const delta = currentTime - lastFrameTime;
+
+      if (delta >= 1000) {
+        fps = Math.round((frameCount * 1000) / delta);
+        document.getElementById('fps').textContent = fps;
+        updateStatus('fps-status', 60 - fps, 0, 'less');
+        
+        if (fps < 30) {
+          log(`Low FPS detected: ${fps}`, 'error');
+        } else if (fps < 50) {
+          log(`FPS below target: ${fps}`, 'warning');
+        }
+
+        frameCount = 0;
+        lastFrameTime = currentTime;
+      }
+
+      if (monitoring) {
+        requestAnimationFrame(measureFPS);
+      }
+    }
+
+    function measureMemory() {
+      if (performance.memory) {
+        const usedMemory = Math.round(performance.memory.usedJSHeapSize / 1048576);
+        document.getElementById('memory').textContent = usedMemory;
+        
+        if (initialMemory === 0) {
+          initialMemory = usedMemory;
+        }
+
+        const memoryIncrease = usedMemory - initialMemory;
+        if (memoryIncrease > 50) {
+          log(`Memory increased by ${memoryIncrease}MB - possible memory leak`, 'error');
+          updateStatus('memory-status', memoryIncrease, 50, 'less');
+        } else if (memoryIncrease > 20) {
+          log(`Memory increased by ${memoryIncrease}MB`, 'warning');
+          updateStatus('memory-status', memoryIncrease, 20, 'less');
+        } else {
+          updateStatus('memory-status', memoryIncrease, 20, 'less');
+        }
+      } else {
+        document.getElementById('memory').textContent = 'N/A';
+        document.getElementById('memory-status').textContent = 'Not supported';
+      }
+    }
+
+    function measureDOM() {
+      const domNodes = document.getElementsByTagName('*').length;
+      document.getElementById('domNodes').textContent = domNodes;
+      updateStatus('dom-status', domNodes, 1500, 'less');
+      
+      if (domNodes > 2000) {
+        log(`High DOM node count: ${domNodes}`, 'error');
+      } else if (domNodes > 1500) {
+        log(`DOM node count above target: ${domNodes}`, 'warning');
+      }
+    }
+
+    function measurePageLoad() {
+      const perfData = performance.getEntriesByType('navigation')[0];
+      if (perfData) {
+        const loadTime = Math.round(perfData.loadEventEnd - perfData.fetchStart);
+        document.getElementById('loadTime').textContent = loadTime;
+        updateStatus('load-status', loadTime, 2000, 'less');
+        
+        if (loadTime > 3000) {
+          log(`Slow page load: ${loadTime}ms`, 'error');
+        } else if (loadTime > 2000) {
+          log(`Page load above target: ${loadTime}ms`, 'warning');
+        } else {
+          log(`Page load time: ${loadTime}ms`, 'info');
+        }
+      }
+    }
+
+    function measurePaintTimings() {
+      const paintEntries = performance.getEntriesByType('paint');
+      
+      paintEntries.forEach(entry => {
+        if (entry.name === 'first-contentful-paint') {
+          const fcp = Math.round(entry.startTime);
+          document.getElementById('fcp').textContent = fcp;
+          updateStatus('fcp-status', fcp, 1000, 'less');
+          
+          if (fcp > 1500) {
+            log(`Slow First Contentful Paint: ${fcp}ms`, 'error');
+          } else if (fcp > 1000) {
+            log(`FCP above target: ${fcp}ms`, 'warning');
+          } else {
+            log(`First Contentful Paint: ${fcp}ms`, 'info');
+          }
+        }
+      });
+    }
+
+    function startMonitoring() {
+      monitoring = true;
+      document.getElementById('startBtn').disabled = true;
+      document.getElementById('stopBtn').disabled = false;
+      
+      log('Performance monitoring started', 'info');
+      
+      // Start FPS monitoring
+      requestAnimationFrame(measureFPS);
+      
+      // Measure initial metrics
+      measurePageLoad();
+      measurePaintTimings();
+      
+      // Set up periodic measurements
+      setInterval(() => {
+        if (monitoring) {
+          measureMemory();
+          measureDOM();
+        }
+      }, 2000);
+    }
+
+    function stopMonitoring() {
+      monitoring = false;
+      document.getElementById('startBtn').disabled = false;
+      document.getElementById('stopBtn').disabled = true;
+      log('Performance monitoring stopped', 'info');
+    }
+
+    // Auto-measure on load
+    window.addEventListener('load', () => {
+      setTimeout(() => {
+        measurePageLoad();
+        measurePaintTimings();
+      }, 100);
+    });
+  </script>
+</body>
+</html>

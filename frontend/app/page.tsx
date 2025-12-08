@@ -18,6 +18,15 @@ export default function Home() {
   // State for radar and detail card
   const [radarState, setRadarState] = useState<'normal' | 'alert'>('normal');
   const [selectedTransaction, setSelectedTransaction] = useState<ClassifiedTransaction | null>(null);
+  const [isInitializing, setIsInitializing] = useState(true);
+
+  // Track initialization state
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsInitializing(false);
+    }, 2000);
+    return () => clearTimeout(timer);
+  }, []);
 
   // Connect transaction events to radar and audio systems
   useEffect(() => {
@@ -90,10 +99,23 @@ export default function Home() {
           </button>
         </div>
 
-        {/* Error message */}
+        {/* Error message with retry option */}
         {error && (
-          <div className="text-blood-red text-sm font-mono border border-blood-red px-4 py-2 rounded">
-            {error}
+          <div className="text-blood-red text-sm font-mono border border-blood-red px-4 py-2 rounded flex items-center gap-3">
+            <span>⚠ {error}</span>
+            <button
+              onClick={() => window.location.reload()}
+              className="px-2 py-1 border border-blood-red hover:bg-blood-red hover:text-void-black transition-colors text-xs"
+            >
+              RETRY
+            </button>
+          </div>
+        )}
+
+        {/* Loading state */}
+        {isInitializing && !isConnected && !error && (
+          <div className="text-matrix-green text-sm font-mono border border-matrix-green px-4 py-2 rounded animate-pulse">
+            ⚡ Initializing connection to backend...
           </div>
         )}
       </header>
@@ -122,7 +144,23 @@ export default function Home() {
           
           {transactions.length === 0 ? (
             <div className="text-center text-matrix-green opacity-70 font-mono p-8 border border-matrix-green rounded">
-              Monitoring mempool... Waiting for transactions...
+              {isConnected ? (
+                <>
+                  <div className="text-2xl mb-2">👁️</div>
+                  <div>Monitoring mempool... Waiting for transactions...</div>
+                  <div className="text-xs mt-2 opacity-50">
+                    Watching for Uniswap V3 swaps on Sepolia testnet
+                  </div>
+                </>
+              ) : (
+                <>
+                  <div className="text-2xl mb-2">⚠️</div>
+                  <div>Not connected to backend</div>
+                  <div className="text-xs mt-2 opacity-50">
+                    Check that backend is running at: {backendUrl}
+                  </div>
+                </>
+              )}
             </div>
           ) : (
             <TransactionStream
