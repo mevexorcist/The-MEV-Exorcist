@@ -336,4 +336,5 @@ For issues and questions:
 - Test health check endpoint
 - Check Alchemy dashboard for API issues
 #   m e v - e x o r c i s t - b a c k e n d  
+ #   D e p l o y m e n t   t e s t  
  
