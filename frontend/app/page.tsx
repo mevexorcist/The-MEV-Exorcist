@@ -149,7 +149,7 @@ export default function Home() {
                   <div className="text-2xl mb-2">👁️</div>
                   <div>Monitoring mempool... Waiting for transactions...</div>
                   <div className="text-xs mt-2 opacity-50">
-                    Watching for Uniswap V3 swaps on Sepolia testnet
+                    Watching for Uniswap V3 swaps on Base mainnet
                   </div>
                 </>
               ) : (
