@@ -34,11 +34,19 @@ export class TransactionBroadcaster {
     });
 
     // Initialize Socket.io server with CORS configuration
+    // Allow all origins for Mini App embedding, or use specific origins from env
+    const allowedOrigins = process.env.ALLOWED_ORIGINS 
+      ? process.env.ALLOWED_ORIGINS.split(',')
+      : '*';
+    
     this.io = new SocketIOServer(this.httpServer, {
       cors: {
-        origin: '*', // In production, specify allowed origins
+        origin: allowedOrigins,
         methods: ['GET', 'POST'],
+        credentials: true,
       },
+      // Enable WebSocket transport for better compatibility
+      transports: ['websocket', 'polling'],
     });
 
     this.setupEventHandlers();

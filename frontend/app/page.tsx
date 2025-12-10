@@ -4,9 +4,12 @@ import { useState, useEffect } from 'react';
 import { TransactionStream } from '@/components/TransactionStream';
 import { RadarVisualization } from '@/components/RadarVisualization';
 import { DetailCard } from '@/components/DetailCard';
+import { UserProfile } from '@/components/UserProfile';
 import { useTransactionStream } from '@/hooks/useTransactionStream';
 import { useAudioFeedback } from '@/hooks/useAudioFeedback';
+import { useMiniAppContext } from '@/hooks/useMiniAppContext';
 import { ClassifiedTransaction } from '@/types/transaction';
+import { analytics } from '@/utils/analytics';
 
 export default function Home() {
   const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:3001';
@@ -14,19 +17,56 @@ export default function Home() {
   // Wire up hooks
   const { transactions, isConnected, error } = useTransactionStream(backendUrl);
   const { playTick, playSiren, isEnabled: audioEnabled, setEnabled: setAudioEnabled } = useAudioFeedback();
+  const { user, isMiniApp } = useMiniAppContext();
+
+  // Track connection status changes
+  useEffect(() => {
+    analytics.trackConnection(isConnected);
+  }, [isConnected]);
+
+  // Track errors
+  useEffect(() => {
+    if (error) {
+      analytics.trackError(error, { context: 'connection' });
+    }
+  }, [error]);
   
   // State for radar and detail card
   const [radarState, setRadarState] = useState<'normal' | 'alert'>('normal');
   const [selectedTransaction, setSelectedTransaction] = useState<ClassifiedTransaction | null>(null);
   const [isInitializing, setIsInitializing] = useState(true);
 
-  // Track initialization state
+  // Track initialization state and app launch
   useEffect(() => {
     const timer = setTimeout(() => {
       setIsInitializing(false);
     }, 2000);
+    
+    // Track Mini App launch
+    analytics.trackLaunch(isMiniApp);
+    
     return () => clearTimeout(timer);
-  }, []);
+  }, [isMiniApp]);
+
+  // Handle deep linking - load specific transaction from URL parameter
+  useEffect(() => {
+    // Check for transaction hash in URL query parameters
+    const urlParams = new URLSearchParams(window.location.search);
+    const txHash = urlParams.get('tx');
+    
+    if (txHash && transactions.length > 0) {
+      // Find the transaction with matching hash
+      const transaction = transactions.find(tx => tx.hash === txHash);
+      
+      if (transaction) {
+        // Display the transaction in detail card
+        setSelectedTransaction(transaction);
+        
+        // Scroll to top to ensure detail card is visible
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+    }
+  }, [transactions]);
 
   // Connect transaction events to radar and audio systems
   useEffect(() => {
@@ -53,6 +93,9 @@ export default function Home() {
   // Handle transaction click
   const handleTransactionClick = (tx: ClassifiedTransaction) => {
     setSelectedTransaction(tx);
+    
+    // Track transaction view
+    analytics.trackTransactionView(tx.hash, tx.riskLevel);
   };
 
   // Handle detail card close
@@ -64,13 +107,20 @@ export default function Home() {
     <div className="min-h-screen bg-void-black flex flex-col p-8">
       {/* Header with title and connection status */}
       <header className="flex flex-col items-center gap-4 mb-8">
+        {/* User Profile - shown when in Mini App context */}
+        {isMiniApp && (
+          <div className="self-end">
+            <UserProfile user={user} />
+          </div>
+        )}
+
         {/* Title with glitch effect */}
         <h1 className="text-6xl font-bold text-matrix-green glitch-text text-center">
           THE MEV EXORCIST
         </h1>
         
         <p className="text-matrix-green text-center text-xl font-mono max-w-2xl">
-          Real-time Ethereum mempool monitoring for MEV attack detection
+          Real-time Base network mempool monitoring for MEV attack detection
         </p>
 
         {/* Connection status indicator */}

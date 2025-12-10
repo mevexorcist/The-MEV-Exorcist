@@ -2,6 +2,7 @@
 
 import { ClassifiedTransaction } from '@/types/transaction';
 import { useEffect, useRef } from 'react';
+import { ShareButton } from './ShareButton';
 
 interface DetailCardProps {
   transaction: ClassifiedTransaction | null;
@@ -61,9 +62,9 @@ export function DetailCard({ transaction, onClose }: DetailCardProps) {
     return num.toFixed(4);
   };
 
-  // Generate Etherscan link
-  const etherscanBase = process.env.NEXT_PUBLIC_ETHERSCAN_BASE || 'https://sepolia.etherscan.io';
-  const etherscanLink = `${etherscanBase}/tx/${transaction.hash}`;
+  // Generate BaseScan link
+  const explorerBase = process.env.NEXT_PUBLIC_EXPLORER_URL || 'https://basescan.org';
+  const explorerLink = `${explorerBase}/tx/${transaction.hash}`;
 
   return (
     <div className="fixed inset-0 bg-void-black bg-opacity-80 flex items-center justify-center z-50 p-4">
@@ -105,11 +106,11 @@ export function DetailCard({ transaction, onClose }: DetailCardProps) {
             </div>
           </div>
 
-          {/* Transaction hash with Etherscan link */}
+          {/* Transaction hash with BaseScan link */}
           <div>
             <div className="text-sm opacity-70 mb-1">TRANSACTION HASH</div>
             <a
-              href={etherscanLink}
+              href={explorerLink}
               target="_blank"
               rel="noopener noreferrer"
               className="text-matrix-green hover:text-white underline break-all"
@@ -134,6 +135,13 @@ export function DetailCard({ transaction, onClose }: DetailCardProps) {
             </div>
           </div>
         </div>
+
+        {/* Share button - only for HIGH risk transactions */}
+        {transaction.riskLevel === 'HIGH' && (
+          <div className="mt-6 pt-6 border-t border-matrix-green/30">
+            <ShareButton transaction={transaction} />
+          </div>
+        )}
       </div>
     </div>
   );

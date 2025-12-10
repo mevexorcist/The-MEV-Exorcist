@@ -4,18 +4,18 @@ Use this checklist to ensure a successful deployment of the MEV Exorcist backend
 
 ## Pre-Deployment
 
-- [ ] **Obtain Alchemy API Key**
+- [x] **Obtain Alchemy API Key**
   - Sign up at [alchemy.com](https://www.alchemy.com/)
   - Create a new app for Ethereum Sepolia testnet
   - Enable WebSocket access
-  - Copy the WebSocket URL (starts with `wss://`)
+  - Copy the WebSocket URL (starts with `wss://eth-sepolia.g.alchemy.com/v2/VxzNAdEeOM4JedsLKlxqE`)
 
 - [ ] **Choose Deployment Platform**
   - [ ] Railway (recommended for simplicity)
-  - [ ] Render (recommended for free tier)
+  - [x] Render (recommended for free tier)
   - [ ] Docker-based (AWS, GCP, Azure, DigitalOcean)
 
-- [ ] **Test Locally**
+- [x] **Test Locally**
   ```bash
   cd backend
   npm install
@@ -24,57 +24,58 @@ Use this checklist to ensure a successful deployment of the MEV Exorcist backend
   npm run build
   npm start
   ```
-  - [ ] Verify health check: `curl http://localhost:3001/health`
-  - [ ] Check logs for successful connection to Alchemy
+  - [x] Verify health check: `curl http://localhost:3001/health`
+  - [x] Check logs for successful connection to Alchemy
 
 ## Deployment Steps
 
 ### Railway Deployment
 
-- [ ] **Create Railway Account**
+- [x] **Create Railway Account**
   - Visit [railway.app](https://railway.app)
   - Sign up with GitHub
 
-- [ ] **Create New Project**
+- [x] **Create New Project**
   - Click "New Project"
   - Select "Deploy from GitHub repo"
   - Choose your repository
   - Set root directory to `backend`
 
-- [ ] **Configure Environment Variables**
-  - [ ] `ALCHEMY_WSS_URL` = `wss://eth-sepolia.g.alchemy.com/v2/YOUR_API_KEY`
-  - [ ] `UNISWAP_V3_ROUTER` = `0xE592427A0AEce92De3Edee1F18E0157C05861564`
-  - [ ] `RISK_THRESHOLD_ETH` = `0.1`
-  - [ ] `NODE_ENV` = `production`
-  - [ ] Leave `PORT` empty (Railway auto-assigns)
+- [x] **Configure Environment Variables**
+  - [x] `ALCHEMY_WSS_URL` = `wss://eth-sepolia.g.alchemy.com/v2/YOUR_API_KEY`
+  - [x] `UNISWAP_V3_ROUTER` = `0xE592427A0AEce92De3Edee1F18E0157C05861564`
+  - [x] `RISK_THRESHOLD_ETH` = `0.1`
+  - [x] `NODE_ENV` = `production`
+  - [x] Leave `PORT` empty (Railway auto-assigns)
 
-- [ ] **Deploy**
+- [x] **Deploy**
   - Railway will automatically build and deploy
   - Wait for deployment to complete (~2-3 minutes)
 
-- [ ] **Note Public URL**
+- [x] **Note Public URL**
   - Copy the public URL from Railway dashboard
-  - Format: `https://your-app.railway.app`
+  - Format: `https://The-MEV-Exorcist.railway.app`
+            'https://the-mev-exorcist-production.up.railway.app'
 
 ### Render Deployment
 
-- [ ] **Create Render Account**
+- [] **Create Render Account**
   - Visit [render.com](https://render.com)
   - Sign up with GitHub
 
-- [ ] **Create New Web Service**
+- [] **Create New Web Service**
   - Click "New +" → "Web Service"
   - Connect your GitHub repository
   - Select the repository
 
-- [ ] **Configure Service**
-  - [ ] Name: `mev-exorcist-backend`
-  - [ ] Region: Choose closest to your users
-  - [ ] Branch: `main`
-  - [ ] Root Directory: `backend`
-  - [ ] Environment: `Node`
-  - [ ] Build Command: `npm install && npm run build`
-  - [ ] Start Command: `npm start`
+- [] **Configure Service**
+  - [] Name: `mev-exorcist-backend`
+  - [] Region: Choose closest to your users
+  - [] Branch: `main`
+  - [] Root Directory: `backend`
+  - [] Environment: `Node`
+  - [] Build Command: `npm install && npm run build`
+  - [] Start Command: `npm start`
 
 - [ ] **Configure Environment Variables**
   - [ ] `ALCHEMY_WSS_URL` = `wss://eth-sepolia.g.alchemy.com/v2/YOUR_API_KEY`
