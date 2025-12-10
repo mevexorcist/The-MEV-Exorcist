@@ -1,0 +1,10 @@
+{
+  "version": "1.0.0",
+  "name": "The MEV Exorcist",
+  "iconUrl": "https://mev-exorcist.vercel.app/icon.png",
+  "homeUrl": "https://mev-exorcist.vercel.app",
+  "imageUrl": "https://mev-exorcist.vercel.app/preview.png",
+  "splashImageUrl": "https://mev-exorcist.vercel.app/splash.png",
+  "splashBackgroundColor": "#000000",
+  "webhookUrl": "https://mev-exorcist.vercel.app/api/webhook"
+}

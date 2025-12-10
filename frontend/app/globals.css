@@ -70,3 +70,46 @@ body {
   backface-visibility: hidden;
   perspective: 1000px;
 }
+
+/* Touch-friendly styles */
+@media (hover: none) and (pointer: coarse) {
+  /* Increase touch target sizes on touch devices */
+  button, a, [role="button"] {
+    min-height: 44px;
+    min-width: 44px;
+    padding: 12px;
+  }
+
+  /* Remove hover effects on touch devices */
+  button:hover, a:hover {
+    opacity: 1;
+  }
+
+  /* Add active state for touch feedback */
+  button:active, a:active, .touch-active {
+    opacity: 0.7;
+    transform: scale(0.98);
+  }
+}
+
+/* Ensure all interactive elements are touch-friendly */
+button, a, [role="button"], [onclick] {
+  -webkit-tap-highlight-color: rgba(0, 255, 0, 0.2);
+  touch-action: manipulation;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+/* Smooth scrolling for mobile */
+@media (max-width: 768px) {
+  html {
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* Optimize for mobile performance */
+  * {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+}

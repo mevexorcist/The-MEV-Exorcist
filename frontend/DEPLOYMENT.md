@@ -18,7 +18,8 @@ Configure the following environment variables in your Vercel project settings:
 
 ```bash
 # Backend Socket.io server URL (replace with your deployed backend URL)
-NEXT_PUBLIC_BACKEND_URL=https://your-backend.railway.app
+NEXT_PUBLIC_BACKEND_URL=https://the-mev-exorcist-production.up.railway.app
+
 
 # Etherscan base URL for Sepolia testnet
 NEXT_PUBLIC_ETHERSCAN_BASE=https://sepolia.etherscan.io
